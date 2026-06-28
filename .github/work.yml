@@ -1,0 +1,68 @@
+name: 'OpenRCT2 Rollup ES6 Builder'
+description: 'Compiles OpenRCT2 TypeScript plugins into unified ES6 JavaScript files.'
+author: 'TrollMaster'
+branding:
+  icon: 'package'
+  color: 'purple'
+
+# 1. DEFINE FLEXIBLE INPUT PARAMETERS
+inputs:
+  entry-point:
+    description: 'The main entry TypeScript file'
+    required: false
+    default: './src/registerPlugin.ts'
+  output-file:
+    description: 'The final destination path for the compiled .js script bundle'
+    required: false
+    default: './dist/smash_troll_plugin.js'
+
+# 2. THE ENGINE EXECUTION STEPS
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Node.js Environment
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Dynamically Bootstrap Compiler Core
+      shell: bash
+      run: |
+        echo "Initializing dynamic build engine dependencies..."
+        if [ ! -f package.json ]; then
+          echo '{"private":true}' > package.json
+        fi
+        npm install typescript rollup @rollup/plugin-typescript rollup-plugin-terser tslib openrct2-typescript-definitions --save-dev
+
+    - name: Generate Custom Rollup Action Configurations
+      shell: bash
+      run: |
+        cat << 'EOF' > rollup.action.config.js
+        import typescript from "@rollup/plugin-typescript";
+        import { terser } from "rollup-plugin-terser";
+
+        export default {
+          input: "${{ inputs.entry-point }}",
+          output: {
+            file: "${{ inputs.output-file }}",
+            format: "iife"
+          },
+          plugins: [
+            typescript({
+              target: "es6",
+              module: "esnext",
+              skipLibCheck: true,
+              forceConsistentCasingInFileNames: true
+            }),
+            terser({
+              ecma: 6,
+              mangle: true,
+              compress: true
+            })
+          ]
+        };
+        EOF
+
+    - name: Run Rollup ES6 Compiler Pipeline
+      shell: bash
+      run: npx rollup -c rollup.action.config.js
