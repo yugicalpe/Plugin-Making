@@ -1,4 +1,4 @@
-name: Build OpenRCT2 Crossover Plugin
+name: Build OpenRCT2 Plugin
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
         run: npm run build
 
       - name: Upload compiled plugin artifact
-        uses: actions/artifacts@v4
+        uses: actions/upload-artifact@v4
         with:
           name: acnh-ssbu-plugin
           path: dist/*.js
