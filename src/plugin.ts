@@ -9,6 +9,15 @@ function myPluginMain(): void {
     });
 }
 
+function myPluginMain(): void {
+    console.log("TypeScript plugin loaded!");
+    
+    context.subscribe('interval.day', () => {
+        park.cash += 10000;
+    });
+}
+
+
 registerPlugin({
     name: "Name of your plugin",
     version: "1.0",
