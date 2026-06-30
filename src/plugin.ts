@@ -9,12 +9,21 @@ function myPluginMain(): void {
     });
 }
 
-function myPluginMain(): void {
-    console.log("TypeScript plugin loaded!");
-    
-    context.subscribe('interval.day', () => {
-        park.cash += 10000;
-    });
+// Define a structured object map list
+const FIGHTER_MAP = {
+    mario: { name: "Mario", quote: "Its-a me, Mario! Let's-a go!" },
+    link: { name: "Link", quote: "Hyaaaah! Seiyah!" },
+    sonic: { name: "Sonic", quote: "You're too slow! Gotta go fast!" }
+};
+
+export function handleChatTrigger(commandName) {
+    // Instantly check if the keyword exists inside our constant list
+    if (commandName in FIGHTER_MAP) {
+        const fighter = FIGHTER_MAP[commandName];
+        
+        // Broadcast via the game's network message API
+        network.sendMessage("[" + fighter.name + "]: " + fighter.quote);
+    }
 }
 
 
